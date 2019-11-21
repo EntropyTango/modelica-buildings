@@ -17,12 +17,16 @@ def main():
     # Add parent directory to system path
     parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sys.path.insert(1, parent_dir)
+
     # Import Heat pump and calibration module
     import PythonModel as hp
+
     # Change working directory to current directory
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
     # Set to True if calibrating for cooling mode
     CoolingMode = False
+    
     # File name for performance data
     tableFileName = 'somePerformanceData.txt'
 

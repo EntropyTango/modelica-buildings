@@ -232,6 +232,7 @@ def simulate_in_dymola(heaPum, data, tableName, tableFileName):
     import getpass
     import os
     import tempfile
+    from pathlib import Path
 
     # Find absolute path to buildings library
     packagePath = os.path.normpath(
@@ -239,10 +240,12 @@ def simulate_in_dymola(heaPum, data, tableName, tableFileName):
                      '..', '..', '..', '..', '..', '..'))
 
     # Create temporary directory for simulation files
+    modelica_root = os.environ['MODELICAPATH']
     dirPrefix = tempfile.gettempprefix()
-    tmpDir = tempfile.mkdtemp(prefix=dirPrefix + '-'
-                              + 'HeatPumpCalibration' + '-'
-                              + getpass.getuser() + '-')
+    dirSim = dirPrefix + '-' + 'HeatPumpCalibration' + '-' + getpass.getuser()
+    tmpDir = os.path.abspath(Path.cwd() / modelica_root / 'Temp' / dirSim)
+    print('Temporay working directory is: ' + tmpDir)
+
 
     # Set parameters for simulation in Dymola
     calModelPath = heaPum.modelicaCalibrationModelPath()
@@ -267,11 +270,13 @@ def simulate_in_dymola(heaPum, data, tableName, tableFileName):
     s.setStopTime(len(data.EWT_Source))
     s.setSolver('dassl')
     # Kill the process if it does not finish in 2 minutes
-    s.setTimeOut(120)
+    s.setTimeOut(500)
     s.showProgressBar(False)
     s.printModelAndTime()
 #    s.showGUI(show=True)
 #    s.exitSimulator(exitAfterSimulation=False)
+
+    print('Now we simulate')
     s.simulate()
 
     # Read results
